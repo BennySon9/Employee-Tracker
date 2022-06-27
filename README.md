@@ -15,6 +15,8 @@
 
 Content management system(CMS) that builds from a command-line a series of questions for the user to manage a companies database, using Node.js, Inquirer, and MySQL!
 
+https://drive.google.com/file/d/1KMt5F_rLgVtnQQ6ZPqY13wkcbG0O0KF-/view
+
 ## Installation
 
 Use: npm i inquirer, Use: npm i mysql
