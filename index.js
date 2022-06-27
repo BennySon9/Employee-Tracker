@@ -148,17 +148,17 @@ const start = () => {
                 .prompt([
                   {
                     type: "input",
-                    message: "What is your employee'ss first name?",
+                    message: "What is your employee's first name?",
                     name: "firstName",
                   },
                   {
                     type: "input",
-                    message: "What is your employee'ss last name?",
+                    message: "What is your employee's last name?",
                     name: "lastName",
                   },
                   {
                     type: "input",
-                    message: "What is your employee'ss role ID?",
+                    message: "What is your employee's role ID?",
                     name: "employeeRoleId",
                   },
                   {
