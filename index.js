@@ -1,5 +1,25 @@
+const mysql = require("mysql");
 const inquirer = require("inquirer");
-const db = require("./db/connection");
+var figlet = require("figlet");
+const { clear } = require("console");
+
+//Add box lettering
+figlet("Employee \n Tracker!", function (err, data) {
+  if (err) {
+    console.log("Something went wrong...");
+    console.dir(err);
+    return;
+  }
+  console.log(data);
+});
+
+const connection = mysql.createConnection({
+  host: "localhost",
+  port: 3306,
+  user: "root",
+  password: "Lincolnb1234!",
+  database: "employees",
+});
 
 const start = () => {
   inquirer
@@ -8,6 +28,7 @@ const start = () => {
       type: "list",
       message:
         "Welcome to YOUR employee tracking system. Would you like to [VIEW], [ADD], [END]",
+      choices: ["VIEW", "ADD", "UPDATE", "END"],
     })
     .then((response) => {
       // View selection
@@ -215,7 +236,109 @@ const start = () => {
                 });
             }
             // when ROLES was chosen to update
+            if (response.chooseUpdate === "Roles") {
+              connection.query("SELECT * FROM role", (err, res) => {
+                if (err) throw err;
+                console.table(res);
+              });
+
+              inquirer
+                .prompt([
+                  {
+                    type: "input",
+                    message: "What role title would you like to update?",
+                    name: "chooseRoleTitle",
+                  },
+                  {
+                    type: "input",
+                    message: "What is the role ID you would like to update?",
+                    name: "chooseRoleId",
+                  },
+                  {
+                    type: "input",
+                    message: "Please enter the updated role title",
+                    name: "enterRoleTitle",
+                  },
+                  {
+                    type: "input",
+                    message: "Please enter the updated role salary",
+                    name: "enterRoleSalary",
+                  },
+                ])
+                .then((response) => {
+                  connection.query("SELECT * from role", (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+                  });
+
+                  connection.query(
+                    "UPDATE role SET title = ?, salary = ? WHERE id = ?",
+                    [
+                      response.enterRoleTitle,
+                      response.enterRoleSalary,
+                      response.chooseRoleId,
+                    ]
+                  );
+
+                  connection.query("SELECT * from role", (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+                    start();
+                  });
+                });
+            }
+            //Choose to update EMployees
+
+            if (response.chooseUpdate === "Employees") {
+              connection.query("SELECT * FROM employee", (err, res) => {
+                if (err) throw err;
+                console.table(res);
+              });
+
+              inquirer
+                .prompt([
+                  {
+                    type: "input",
+                    message:
+                      "What is the ID of the employee you would like to update?",
+                    name: "chooseEmployeeId",
+                  },
+                  {
+                    type: "input",
+                    message:
+                      "What is the new role ID you would like to update?",
+                    name: "chooseEmployeeRoleId",
+                  },
+                ])
+                .then((response) => {
+                  connection.query("SELECT * from employee", (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+                  });
+
+                  connection.query(
+                    "UPDATE employee SET role_id = ? WHERE id = ?",
+                    [response.chooseEmployeeRoleId, response.chooseEmployeeId]
+                  );
+
+                  connection.query("SELECT * from employee", (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+                    start();
+                  });
+                });
+            }
           });
+      }
+
+      if (response.chooseAction === "END") {
+        connection.end();
       }
     });
 };
+
+connection.connect((err) => {
+  if (err) throw err;
+  // run the start function after the connection is made to prompt the user
+  start();
+});
